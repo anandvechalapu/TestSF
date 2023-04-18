@@ -1,0 +1,71 @@
+<!-- lwc-view-all-open-opportunities.html -->
+
+<template>
+    <lightning-datatable data={opportunities}
+                        columns={columns}
+                        key-field="id"
+                        onrowaction={handleRowAction}
+                        hide-checkbox-column
+                        show-row-number-column
+                        sorted-by={sortedBy}
+                        sorted-direction={sortedDirection}
+                        max-row-selection={maxRowSelection}
+                        onsort={handleSort}
+                        current-page-token={currentPageToken}
+                        onloadmore={handleLoadMore}
+                        enable-infinite-loading>
+    </lightning-datatable>
+</template>
+
+<script>
+    import { LightningElement, api, wire } from 'lwc';
+    import getOpenOpportunities from '@salesforce/apex/OpportunityController.getOpenOpportunities';
+
+    export default class LwcViewAllOpenOpportunities extends LightningElement {
+        @api opportunities;
+        @api columns;
+        @api sortedBy;
+        @api sortedDirection;
+        @api maxRowSelection;
+        @api currentPageToken;
+
+        @wire(getOpenOpportunities)
+        wiredOpportunities({ data, error }) {
+            if (data) {
+                this.opportunities = data;
+            } else if (error) {
+                console.error(error);
+            }
+        }
+
+        handleRowAction(event) {
+            const actionName = event.detail.action.name;
+            const row = event.detail.row;
+            switch (actionName) {
+                case 'view':
+                    this.viewOpportunity(row);
+                    break;
+                case 'edit':
+                    this.editOpportunity(row);
+                    break;
+                default:
+            }
+        }
+
+        viewOpportunity(row) {
+            // Open view opportunity page
+        }
+
+        editOpportunity(row) {
+            // Open edit opportunity page
+        }
+
+        handleSort(event) {
+            // Handle sorting
+        }
+
+        handleLoadMore(event) {
+            // Handle loading more opportunities
+        }
+    }
+</script>
