@@ -1,0 +1,43 @@
+<!-- XML file for LWC component for the user survey story -->
+<template>
+  <div class="user-survey-container">
+    <!-- Displays all surveys that match the user's criteria -->
+    <template if:true={surveys}>
+      <template for:each={surveys} for:item="survey">
+        <c-user-survey-card survey={survey} onskip={handleSkip} />
+      </template>
+    </template>
+    <!-- Displays a message if no surveys are available -->
+    <template if:false={surveys}>
+      <p>No surveys available at this time.</p>
+    </template>
+  </div>
+</template>
+
+<script>
+import { LightningElement, wire } from 'lwc';
+import { getSurveys } from '@salesforce/apex/SurveyController.getSurveys';
+
+export default class UserSurvey extends LightningElement {
+  // Array of surveys
+  surveys;
+
+  // Retrieve survey data
+  @wire(getSurveys)
+  wiredSurveys({ error, data }) {
+    if (data) {
+      this.surveys = data;
+    } else if (error) {
+      this.surveys = undefined;
+      console.error(error);
+    }
+  }
+
+  // Handle the skipping of a survey
+  handleSkip(event) {
+    const surveyId = event.detail;
+    // Call the server-side controller to mark the survey as skipped
+    // and remove it from the list of surveys
+  }
+}
+</script>
