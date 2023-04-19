@@ -1,0 +1,54 @@
+<template>
+  <lightning-card>
+    <div class="slds-m-around_medium">
+      <h1>User Survey</h1>
+      <p>Welcome to the user survey! Here you can provide feedback on surveys that are relevant to you.</p>
+    </div>
+    <div class="slds-m-around_medium">
+      <template if:true={surveys.length}>
+        <h2>Surveys</h2>
+        <template for:each={surveys} for:item="survey">
+          <div class="slds-card">
+            <div class="slds-card__body">
+              <h3>{survey.name}</h3>
+              <p>{survey.description}</p>
+            </div>
+            <div class="slds-card__footer">
+              <lightning-button
+                label="Skip"
+                onclick={handleSkipClick}
+                data-survey-id={survey.id}
+              ></lightning-button>
+            </div>
+          </div>
+        </template>
+      </template>
+    </div>
+  </lightning-card>
+</template>
+
+<script>
+  import { LightningElement } from "lwc";
+  import getSurveys from "@salesforce/apex/UserSurveyController.getSurveys";
+  export default class UserSurvey extends LightningElement {
+    surveys = [];
+    connectedCallback() {
+      this.loadSurveys();
+    }
+    loadSurveys() {
+      getSurveys()
+        .then(result => {
+          this.surveys = JSON.parse(result);
+        })
+        .catch(error => {
+          // eslint-disable-next-line no-console
+          console.error(error);
+        });
+    }
+    handleSkipClick(event) {
+      const surveyId = event.target.dataset.surveyId;
+      // call apex method to skip survey
+      this.surveys = this.surveys.filter(survey => survey.id !== surveyId);
+    }
+  }
+</script>
